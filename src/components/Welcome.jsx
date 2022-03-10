@@ -92,16 +92,21 @@ const Welcome = () => {
                 <BsInfoCircle fontSize={17} color="#fff" />
               </div>
               <div>
-                <p className="text-dark font-light text-sm" style={{cursor: "pointer"}} onClick={() => {
-                    navigator.clipboard.writeText(currentAccount);
-                    console.log(currentAccount)
-                    Toast.fire({
-                      icon: 'success',
-                      title: 'Sao chép địa chỉ ví thành công!'
-                    })
-                }}>
+                {currentAccount ? (
+                  <p className="text-dark font-light text-sm" style={{cursor: "pointer"}} onClick={() => {
+                      navigator.clipboard.writeText(currentAccount);
+                      console.log(currentAccount)
+                      Toast.fire({
+                        icon: 'success',
+                        title: 'Sao chép địa chỉ ví thành công!'
+                      })
+                    }}>
                   {currentAccount ? shortenAddress(currentAccount): "Chưa kết nối"}
-                </p>
+                  </p>
+                ) : 
+                (
+                  <p className="text-dark font-light text-sm">Chưa kết nối</p>
+                )}
                 <p className="text-dark font-semibold text-lg mt-1">
                   Ethereum {balance && (<span>({balance} ETH)</span>)}
                 </p>
