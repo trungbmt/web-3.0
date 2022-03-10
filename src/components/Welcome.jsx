@@ -2,6 +2,8 @@ import React, { useContext } from "react";
 import { AiFillPlayCircle } from "react-icons/ai";
 import { SiEthereum } from "react-icons/si";
 import { BsInfoCircle } from "react-icons/bs";
+import Swal from 'sweetalert2'
+import 'sweetalert2/dist/sweetalert2.min.css';
 
 
 import { TransactionContext } from "../context/TransactionContext";
@@ -20,6 +22,19 @@ const Input = ({ placeholder, name, type, value, handleChange }) => (
     className="my-2 w-full rounded-sm p-2 outline-none bg-trans-50 text-dark border-none text-sm white-glassmorphism"
   />
 );
+const Toast = Swal.mixin({
+  toast: true,
+  position: 'bottom-end',
+  showConfirmButton: false,
+  timer: 3000,
+  timerProgressBar: true,
+  didOpen: (toast) => {
+    toast.addEventListener('mouseenter', Swal.stopTimer)
+    toast.addEventListener('mouseleave', Swal.resumeTimer)
+  }
+})
+function copyAddress(address){
+}
 
 const Welcome = () => {
   const { currentAccount, connectWallet, handleChange, sendTransaction, formData, isLoading, disconnectWallet, getBalance, getAvatar, balance } = useContext(TransactionContext);
@@ -77,7 +92,14 @@ const Welcome = () => {
                 <BsInfoCircle fontSize={17} color="#fff" />
               </div>
               <div>
-                <p className="text-dark font-light text-sm">
+                <p className="text-dark font-light text-sm" style={{cursor: "pointer"}} onClick={() => {
+                    navigator.clipboard.writeText(currentAccount);
+                    console.log(currentAccount)
+                    Toast.fire({
+                      icon: 'success',
+                      title: 'Sao chép địa chỉ ví thành công!'
+                    })
+                }}>
                   {currentAccount ? shortenAddress(currentAccount): "Chưa kết nối"}
                 </p>
                 <p className="text-dark font-semibold text-lg mt-1">
