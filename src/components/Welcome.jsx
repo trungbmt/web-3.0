@@ -17,13 +17,12 @@ const Input = ({ placeholder, name, type, value, handleChange }) => (
     step="0.0001"
     value={value}
     onChange={(e) => handleChange(e, name)}
-    className="my-2 w-full rounded-sm p-2 outline-none text-dark border-none text-sm white-glassmorphism"
+    className="my-2 w-full rounded-sm p-2 outline-none bg-trans-50 text-dark border-none text-sm white-glassmorphism"
   />
 );
 
 const Welcome = () => {
-  const { currentAccount, connectWallet, handleChange, sendTransaction, formData, isLoading } = useContext(TransactionContext);
-
+  const { currentAccount, connectWallet, handleChange, sendTransaction, formData, isLoading, disconnectWallet, getBalance, getAvatar, balance } = useContext(TransactionContext);
   const handleSubmit = (e) => {
     const { addressTo, amount, keyword, message } = formData;
 
@@ -44,7 +43,7 @@ const Welcome = () => {
           <p className="text-left mt-5 text-white font-light md:w-9/12 w-11/12 text-base">
             Khám phá thế giới tiền điện tử. Mua và bán tiền điện tử dễ dàng trên Crypto.
           </p>
-          {!currentAccount && (
+          {!currentAccount ? (
             <button
               type="button"
               onClick={connectWallet}
@@ -55,7 +54,17 @@ const Welcome = () => {
                 Kết nối Wallet
               </p>
             </button>
-          )}
+          ) : (
+            <button
+              type="button"
+              onClick={disconnectWallet}
+              className="flex flex-row justify-center text-white items-center my-5 bg-[#2952e3] p-3 rounded-full cursor-pointer hover:bg-[#2546bd]"
+            >
+              <AiFillPlayCircle className="text-dark mr-2" />
+              <p className="text-dark text-base font-semibold">
+                Ngắt kết nối
+              </p>
+            </button>)}
         </div>
 
         <div className="flex flex-col flex-1 items-center justify-start w-full mf:mt-0 mt-10">
@@ -69,10 +78,10 @@ const Welcome = () => {
               </div>
               <div>
                 <p className="text-dark font-light text-sm">
-                  {shortenAddress(currentAccount)}
+                  {currentAccount ? shortenAddress(currentAccount): "Chưa kết nối"}
                 </p>
                 <p className="text-dark font-semibold text-lg mt-1">
-                  Ethereum
+                  Ethereum {balance && (<span>({balance} ETH)</span>)}
                 </p>
               </div>
             </div>

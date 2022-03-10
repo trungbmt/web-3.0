@@ -21,6 +21,23 @@ body {
   background-size: cover;
   min-height: 100vh;
 }
+.bg-trans-50 {
+  
+  background-color: rgba(255,255,255,0.2) !important;
+  color: rgba(255,255,255,0.7) !important;
+}
+.bg-trans-50::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+  color: rgba(255,255,255,0.7) !important;
+  opacity: 1; /* Firefox */
+}
+
+.bg-trans-50:-ms-input-placeholder { /* Internet Explorer 10-11 */
+  color: rgba(255,255,255,0.7) !important;
+}
+
+.bg-trans-50::-ms-input-placeholder { /* Microsoft Edge */
+  color: rgba(255,255,255,0.7) !important;
+}
 
 .gradient-bg-services {
   background-color:#0f0e13;

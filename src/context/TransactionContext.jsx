@@ -1,11 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { ethers } from "ethers";
+import Swal from 'sweetalert2'
+import 'sweetalert2/dist/sweetalert2.min.css';
 
 import { contractABI, contractAddress } from "../utils/constants";
 
 export const TransactionContext = React.createContext();
 
 const { ethereum } = window;
+ethereum.on('accountsChanged', function (accounts) {
+  window.location.reload();
+});
 
 const createEthereumContract = () => {
   const provider = new ethers.providers.Web3Provider(ethereum);
@@ -18,13 +23,16 @@ const createEthereumContract = () => {
 export const TransactionsProvider = ({ children }) => {
   const [formData, setformData] = useState({ addressTo: "", amount: "", keyword: "", message: "" });
   const [currentAccount, setCurrentAccount] = useState("");
+  const [balance, setBalance] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [transactionCount, setTransactionCount] = useState(localStorage.getItem("transactionCount"));
   const [transactions, setTransactions] = useState([]);
-
   const handleChange = (e, name) => {
     setformData((prevState) => ({ ...prevState, [name]: e.target.value }));
   };
+  useEffect(() => {
+    getBalance()
+  }, [currentAccount])
 
   const getAllTransactions = async () => {
     try {
@@ -91,15 +99,56 @@ export const TransactionsProvider = ({ children }) => {
       const accounts = await ethereum.request({ method: "eth_requestAccounts", });
 
       setCurrentAccount(accounts[0]);
-      window.location.reload();
     } catch (error) {
       console.log(error);
 
       throw new Error("No ethereum object");
     }
   };
+  const getBalance = async () => {
+    if(currentAccount) {
+
+      const provider = new ethers.providers.Web3Provider(ethereum);
+      await provider.getBalance(currentAccount).then((balance) => {
+  
+        let etherString = ethers.utils.formatEther(balance);
+  
+        setBalance(parseFloat(etherString).toFixed(3));
+      });
+    } else {
+      setBalance();
+    }
+  }
+  const getAvatar = async () => {
+    const avatar = "zxc";
+    console.log(avatar);
+    return avatar;
+  }
+  const disconnectWallet = async () => {
+    console.log("trying disconnect")
+    try {
+      setCurrentAccount('');
+    } catch(error) {
+      console.log(error)
+    }
+  }
 
   const sendTransaction = async () => {
+    if(!currentAccount) {
+      Swal.fire({
+        title: 'Lỗi!',
+        text: 'Bạn chưa kết nối ví của bạn!',
+        icon: 'error',
+        confirmButtonText: 'Kết nối',
+        cancelButtonText: 'Okay',
+        showCancelButton: true
+      }).then((result) => {
+        /* Read more about isConfirmed, isDenied below */
+        if (result.isConfirmed) {
+          connectWallet();
+        }
+      })
+    }
     try {
       if (ethereum) {
         const { addressTo, amount, keyword, message } = formData;
@@ -154,6 +203,10 @@ export const TransactionsProvider = ({ children }) => {
         sendTransaction,
         handleChange,
         formData,
+        disconnectWallet,
+        getBalance,
+        getAvatar,
+        balance
       }}
     >
       {children}
