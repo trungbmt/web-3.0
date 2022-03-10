@@ -36,7 +36,7 @@ const TransactionsCard = ({ addressTo, addressFrom, timestamp, message, keyword,
           )}
         </div>
         <img
-          src={gifUrl || url}
+          src={gifUrl || "https://media4.giphy.com/media/TqiwHbFBaZ4ti/giphy.gif?cid=790b7611b2f6c3b68b1b373377b99e57f9463966e29c9204&rid=giphy.gif&ct=g"}
           alt="nature"
           className="w-full h-64 2xl:h-96 rounded-md shadow-lg object-cover"
         />
@@ -60,12 +60,13 @@ const Transactions = () => {
             Kết nối ví của bạn để xem các giao dịch gần đây!
           </h3>
         )}
-
+        {currentAccount && (
         <div className="flex flex-wrap justify-center items-center mt-10">
           {[...dummyData, ...transactions].reverse().map((transaction, i) => (
             <TransactionsCard key={i} {...transaction} />
           ))}
         </div>
+        )}
       </div>
     </div>
   );

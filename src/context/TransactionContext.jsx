@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { ethers } from "ethers";
 import Swal from 'sweetalert2'
 import 'sweetalert2/dist/sweetalert2.min.css';
@@ -8,9 +8,6 @@ import { contractABI, contractAddress } from "../utils/constants";
 export const TransactionContext = React.createContext();
 
 const { ethereum } = window;
-ethereum.on('accountsChanged', function (accounts) {
-  window.location.reload();
-});
 
 const createEthereumContract = () => {
   const provider = new ethers.providers.Web3Provider(ethereum);
@@ -27,12 +24,18 @@ export const TransactionsProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [transactionCount, setTransactionCount] = useState(localStorage.getItem("transactionCount"));
   const [transactions, setTransactions] = useState([]);
+  const form = useRef(null);
   const handleChange = (e, name) => {
     setformData((prevState) => ({ ...prevState, [name]: e.target.value }));
   };
   useEffect(() => {
     getBalance()
   }, [currentAccount])
+  if(ethereum) {
+    ethereum.on('accountsChanged', function (accounts) {
+      setCurrentAccount(accounts[0])
+    });
+  }
 
   const getAllTransactions = async () => {
     try {
@@ -125,7 +128,6 @@ export const TransactionsProvider = ({ children }) => {
     return avatar;
   }
   const disconnectWallet = async () => {
-    console.log("trying disconnect")
     try {
       setCurrentAccount('');
     } catch(error) {
@@ -170,13 +172,18 @@ export const TransactionsProvider = ({ children }) => {
         setIsLoading(true);
         console.log(`Loading - ${transactionHash.hash}`);
         await transactionHash.wait();
+        Swal.fire({
+          title: 'Chuyển tiền thành công!',
+          icon: 'success',
+          confirmButtonText: 'Okay',
+        })
         console.log(`Success - ${transactionHash.hash}`);
         setIsLoading(false);
 
+        getAllTransactions();
         const transactionsCount = await transactionsContract.getTransactionCount();
 
         setTransactionCount(transactionsCount.toNumber());
-        window.location.reload();
       } else {
         console.log("No ethereum object");
       }

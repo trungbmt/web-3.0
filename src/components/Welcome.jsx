@@ -33,8 +33,6 @@ const Toast = Swal.mixin({
     toast.addEventListener('mouseleave', Swal.resumeTimer)
   }
 })
-function copyAddress(address){
-}
 
 const Welcome = () => {
   const { currentAccount, connectWallet, handleChange, sendTransaction, formData, isLoading, disconnectWallet, getBalance, getAvatar, balance } = useContext(TransactionContext);
